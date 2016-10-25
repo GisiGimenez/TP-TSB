@@ -31,53 +31,28 @@ public class Main {
         try {
             BufferedReader in = new BufferedReader(new InputStreamReader(new FileInputStream(f), "8859_1"));
             String linea = in.readLine();
-            boolean ban=false;
             do {                
-
                 String a = "";
-                char ultimo;
-                
                 char[] hola = linea.toCharArray();
-                
-                
-            for (int i = 0; i < hola.length; i++) 
+            for (int i = 0; i < hola.length; i++) // esta version me separa Cha7u en cha - u
             {
                 if(!Character.isSpaceChar(hola[i]))
-                {
+                { 
                     if(Character.isAlphabetic(hola[i]))
                         a+=hola[i];
                     else
                     {
-                        if(Character.isSpaceChar(hola[i+1]))
-                        v.agregarPalabra(a, f.getName());
+                        if(a!="")
+                        v.agregarPalabra(a.toUpperCase(), f.getName()); //las paso a mayuscula para que no me las cuente por separado(se puede a minuscula tmb)
                         a="";
                     }
                 }
                 else
-                {
-                    if(Character.isAlphabetic(hola[i-2]))
-                    v.agregarPalabra(a, f.getName());
+                {   
+                    if(a!="")
+                    v.agregarPalabra(a.toUpperCase(), f.getName()); 
                     a="";
-                } 
-//                if(Character.isAlphabetic(hola[i]))
-//                {
-//                    if(!Character.isSpaceChar(hola[i]))
-//                    { 
-//                        ultimo=hola[i];
-//                        a+=hola[i];}
-//                    else
-//                    {
-//                        v.agregarPalabra(a, f.getName());
-//                        a="";
-//                    }
-//                }
-//                else
-//                {
-//                    v.agregarPalabra(a, f.getName());
-//                    a="";
-//                    
-//                } 
-                
+                }                 
             }
              linea = in.readLine();
             } while (linea != null);

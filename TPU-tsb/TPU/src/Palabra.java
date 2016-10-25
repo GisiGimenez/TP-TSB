@@ -74,7 +74,7 @@ public class Palabra implements Comparable<Palabra>{
 
     @Override
     public int compareTo(Palabra o) {
-        return palabra.compareTo(o.palabra);
+        return palabra.compareToIgnoreCase(o.palabra);
     }
 
 }
