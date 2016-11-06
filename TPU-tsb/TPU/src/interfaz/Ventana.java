@@ -9,6 +9,8 @@ package interfaz;
 import Logica.Cola;
 import Logica.Cola;
 import Logica.Gestor;
+import Logica.Palabra;
+import Logica.SimpleList;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -21,6 +23,9 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
+import javax.swing.RowFilter;
+import javax.swing.table.TableModel;
+import javax.swing.table.TableRowSorter;
 
 /**
  *
@@ -92,17 +97,17 @@ public class Ventana extends javax.swing.JFrame {
 
         tblPalabras.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
-                {null, null, null, null},
-                {null, null, null, null},
-                {null, null, null, null},
-                {null, null, null, null}
+                {null, null, null},
+                {null, null, null},
+                {null, null, null},
+                {null, null, null}
             },
             new String [] {
-                "Title 1", "Title 2", "Title 3", "Title 4"
+                "Palabra", "Frecuencia", "Documentos"
             }
         ) {
             boolean[] canEdit = new boolean [] {
-                false, false, false, false
+                false, false, false
             };
 
             public boolean isCellEditable(int rowIndex, int columnIndex) {
@@ -113,9 +118,13 @@ public class Ventana extends javax.swing.JFrame {
 
         jLabel3.setText("Vocabulario");
 
-        jLabel4.setText("jLabel4");
+        jLabel4.setText("Ingrese filtros");
 
-        jTextField1.setText("jTextField1");
+        jTextField1.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jTextField1ActionPerformed(evt);
+            }
+        });
 
         btnBuscar.setText("Buscar");
         btnBuscar.addActionListener(new java.awt.event.ActionListener() {
@@ -159,7 +168,7 @@ public class Ventana extends javax.swing.JFrame {
                     .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
                         .addGroup(layout.createSequentialGroup()
                             .addComponent(jLabel4)
-                            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                            .addGap(37, 37, 37)
                             .addComponent(jTextField1, javax.swing.GroupLayout.PREFERRED_SIZE, 105, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                             .addComponent(btnBuscar)
@@ -247,8 +256,7 @@ public class Ventana extends javax.swing.JFrame {
     }//GEN-LAST:event_btnElegirActionPerformed
 
     private void btnBuscarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnBuscarActionPerformed
-        gestor.materializar();
-        System.out.println(gestor.getV().toString());
+        this.jTextField1ActionPerformed(evt);
     }//GEN-LAST:event_btnBuscarActionPerformed
 
     private void btnActualizarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnActualizarActionPerformed
@@ -260,6 +268,73 @@ public class Ventana extends javax.swing.JFrame {
         }
         
     }//GEN-LAST:event_btnActualizarActionPerformed
+    private String[][] resultadoPorEvento(String pal)
+    {
+        SimpleList<Palabra> list = gestor.encontrarPorPrimerasLetras(pal);
+        int tam= list.size();
+        String matriz[][]= new String [tam][3];
+        for(int i=0;i<tam;i++)
+        {
+            matriz[i][0]=list.getFirst().getPalabra();
+            matriz[i][1]=Integer.toString(list.getFirst().getFrecuencia());
+            matriz[i][2]=Integer.toString(list.getFirst().getDocumentos().size());
+            list.removeFirst();
+            
+        }
+        return matriz;
+    }
+    
+//    private void filtrarPalabras(){
+//        String raiz = jTextField1.getText();
+//        TableRowSorter<TableModel> rs = (TableRowSorter)tblPalabras.getRowSorter();
+//        rs.setModel(modelo);
+//        if(raiz == null || "".equals(raiz)) {
+//            if(rs.getRowFilter()!=null){
+//                rs.setRowFilter(null);
+//            }
+//        }
+//        else {
+//            String sraiz = "^" + raiz;
+//            rs.setRowFilter(RowFilter.regexFilter(sraiz, 0));
+//        }
+//    }
+    
+    private void jTextField1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jTextField1ActionPerformed
+        // TODO add your handling code here:
+        tblPalabras.setModel(new javax.swing.table.DefaultTableModel(new Object[][] { {null,null,null},
+                {null,null,null},
+                {null,null,null} }
+                ,
+    new String [] {
+        "Palabra", "Frecuencia", "Documentos"
+    }
+) {
+    boolean[] canEdit = new boolean [] {
+        false, false, false, false
+    };
+
+    public boolean isCellEditable(int rowIndex, int columnIndex) {
+        return canEdit [columnIndex];
+    }
+});
+        String palabra = this.jTextField1.getText();
+        String matriz[][]= this.resultadoPorEvento(palabra);
+        tblPalabras.setModel(new javax.swing.table.DefaultTableModel(matriz ,
+    new String [] {
+        "Palabra", "Frecuencia", "Documentos"
+    }
+) {
+    boolean[] canEdit = new boolean [] {
+        false, false, false, false
+    };
+
+    public boolean isCellEditable(int rowIndex, int columnIndex) {
+        return canEdit [columnIndex];
+    }
+});
+
+jScrollPane2.setViewportView(tblPalabras);
+    }//GEN-LAST:event_jTextField1ActionPerformed
 
     /**
      * @param args the command line arguments

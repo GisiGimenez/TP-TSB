@@ -86,6 +86,22 @@ public class Gestor {
        }
        
    }
+   public SimpleList<Palabra> encontrarPorPrimerasLetras(String letras)
+   {
+       this.materializar();
+       SimpleList ret = new SimpleList(); 
+       int longHash = v.getVocabulario().getItems().length;
+       for(int i=0;i<longHash;i++){
+           for(int j=0; j<v.getVocabulario().getItems()[i].size(); j++){
+               String pal = v.getVocabulario().getItems()[i].get(j).getPalabra();
+               if(pal.startsWith(letras))
+               {
+                   ret.addLast(v.getVocabulario().getItems()[i].get(j));
+               }
+           }
+       }
+       return ret;
+   }
     public void actualizarTabla() throws SQLException {
         Acceso acc = new Acceso();
         String sql = "INSERT INTO PALABRA (PALABRA, FRECUENCIA,CANTIDADDOC) VALUES (?, ?, ?) ";
