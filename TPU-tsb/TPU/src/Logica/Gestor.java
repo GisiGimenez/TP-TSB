@@ -88,26 +88,34 @@ public class Gestor {
    }
     public void actualizarTabla() throws SQLException {
         Acceso acc = new Acceso();
-        String sql = "INSERT INTO PALABRA (PALABRA, FRECUENCIA) VALUES (?, ?) ";
-        String sql2="UPDATE";
+        String sql = "INSERT INTO PALABRA (PALABRA, FRECUENCIA,CANTIDADDOC) VALUES (?, ?, ?) ";
+        String sql2="UPDATE PALABRA SET FRECUENCIA=?, CANTIDADDOC=? WHERE PALABRA=?";
         Connection con = acc.conectar();
         PreparedStatement ps = con.prepareStatement(sql);
-
+        PreparedStatement ps2 = con.prepareStatement(sql2);
         for (int i = 0; i < v.getVocabulario().getItems().length; i++) {
             for (int j = 0; j < v.getVocabulario().getItems()[i].size(); j++) {
                     if(!this.estaEnBD(v.getVocabulario().getItems()[i].get(j)))
                     {   ps.setString(1, v.getVocabulario().getItems()[i].get(j).getPalabra());
                         ps.setString(2, String.valueOf(v.getVocabulario().getItems()[i].get(j).getFrecuencia()));
+                        ps.setString(3, String.valueOf(v.getVocabulario().getItems()[i].get(j).getDocumentos().size()));
                         ps.addBatch();
                         System.out.println("jaja");
                     }
                     else
+                    {
                         System.out.println("jajaja");
-        
+                        ps2.setString(1, String.valueOf(v.getVocabulario().getItems()[i].get(j).getFrecuencia()));
+                        ps2.setString(2, String.valueOf(v.getVocabulario().getItems()[i].get(j).getDocumentos().size()));
+                        ps2.setString(3, v.getVocabulario().getItems()[i].get(j).getPalabra());
+                        ps2.addBatch();                       
+                    }
             }
         }
+            ps2.executeBatch();
             ps.executeBatch();
             ps.close();
+            ps2.close();
             con.close();
     }
        public boolean estaEnBD(Palabra pal) {
@@ -121,7 +129,8 @@ public class Gestor {
             ResultSet rs;
             String sql = "SELECT * FROM PALABRA WHERE PALABRA= '" + pal.getPalabra()+"'";
             rs = stm.executeQuery(sql);
-            if(rs.getFetchSize()>0)
+            rs.next();
+            if(rs.getRow()>0)
                 ban=true;
             stm.close();
             c.commit();

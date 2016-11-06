@@ -206,6 +206,7 @@ public class Ventana extends javax.swing.JFrame {
         // TODO add your handling code here:
         gestor.procesarLibros(lista);
         VentanaEspera v= new VentanaEspera(this,true);
+       
 //        v.setVisible(true);
     }//GEN-LAST:event_btnProcesarActionPerformed
 
