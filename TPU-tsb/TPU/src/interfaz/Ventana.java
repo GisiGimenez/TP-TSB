@@ -284,39 +284,9 @@ public class Ventana extends javax.swing.JFrame {
         return matriz;
     }
     
-//    private void filtrarPalabras(){
-//        String raiz = jTextField1.getText();
-//        TableRowSorter<TableModel> rs = (TableRowSorter)tblPalabras.getRowSorter();
-//        rs.setModel(modelo);
-//        if(raiz == null || "".equals(raiz)) {
-//            if(rs.getRowFilter()!=null){
-//                rs.setRowFilter(null);
-//            }
-//        }
-//        else {
-//            String sraiz = "^" + raiz;
-//            rs.setRowFilter(RowFilter.regexFilter(sraiz, 0));
-//        }
-//    }
-    
     private void jTextField1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jTextField1ActionPerformed
         // TODO add your handling code here:
-        tblPalabras.setModel(new javax.swing.table.DefaultTableModel(new Object[][] { {null,null,null},
-                {null,null,null},
-                {null,null,null} }
-                ,
-    new String [] {
-        "Palabra", "Frecuencia", "Documentos"
-    }
-) {
-    boolean[] canEdit = new boolean [] {
-        false, false, false, false
-    };
-
-    public boolean isCellEditable(int rowIndex, int columnIndex) {
-        return canEdit [columnIndex];
-    }
-});
+        
         String palabra = this.jTextField1.getText();
         String matriz[][]= this.resultadoPorEvento(palabra);
         tblPalabras.setModel(new javax.swing.table.DefaultTableModel(matriz ,
