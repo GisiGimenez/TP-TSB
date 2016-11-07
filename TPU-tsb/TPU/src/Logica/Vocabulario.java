@@ -1,5 +1,7 @@
 package Logica;
 
+import Persistencia.Acceso;
+import EstructuraDatos.HashTable;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -24,7 +26,6 @@ public class Vocabulario {
 
     public Vocabulario() {
         vocabulario = new HashTable<>();
-        this.materializar();
     }
     public HashTable<Palabra> getVocabulario(){
         return vocabulario;
@@ -44,28 +45,6 @@ public class Vocabulario {
         } else {
             vocabulario.put(pal);
         }
-    }
-
-    public boolean buscarEnBD(Palabra pal) {
-        Acceso acc = new Acceso();
-        try {
-
-            Connection c = acc.conectar();
-            c.setAutoCommit(false);
-            Statement stm = c.createStatement();
-            ResultSet rs;
-            String sql = "SELECT * FROM VOCABULARIO WHERE PALABRA=" + pal.getPalabra();
-            rs = stm.executeQuery(sql);
-
-            stm.close();
-            c.commit();
-            c.close();
-
-        } catch (SQLException ex) {
-            Logger.getLogger(Vocabulario.class.getName()).log(Level.SEVERE, null, ex);
-        }
-        return false;
-
     }
 
     public void materializar() {
@@ -126,22 +105,9 @@ public class Vocabulario {
         return documentos;
     }
 
-    public void insert() {
-
-    }
-
     @Override
     public String toString() {
         return vocabulario.toString();
     }
 
-    
-//    for (int i = 0; i < vocabulario.getItems().length; i++) 
-//            {
-//                for (int j = 0; j < vocabulario.getItems()[i].size(); j++) 
-//                {
-//                   sql="SELECT * FROM VOCABULARIO WHERE PALABRA= '"+vocabulario.getItems()[i].get(i).getPalabra();
-//                    
-//                }
-//            }
     }

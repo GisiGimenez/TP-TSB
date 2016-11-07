@@ -1,6 +1,8 @@
 package Logica;
 
 
+import Persistencia.Acceso;
+import EstructuraDatos.SimpleList;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
@@ -27,15 +29,13 @@ import java.util.logging.Logger;
  * @author a2
  */
 public class Gestor {
-    private Cola cola;
-    private Vocabulario v;
-    public Gestor(){
-        cola=new Cola();
-        v=new Vocabulario();
+    private Vocabulario voc;
+    public Gestor(){        
+        voc=new Vocabulario();
     }
 
-    public Vocabulario getV() {
-        return v;
+    public Vocabulario getVoc() {
+        return voc;
     }
     
     public void leerDoc(String nombre)
@@ -51,52 +51,45 @@ public class Gestor {
             String linea = in.readLine();
             do {                
                 String a = "";
-                char[] hola = linea.toCharArray();
-                for (int i = 0; i < hola.length; i++) 
+                char[] lineaVec = linea.toCharArray();
+                for (int i = 0; i < lineaVec.length; i++) 
                 {
-                    if(hola[i]!=' ')
+                    if(lineaVec[i]!=' ')
                     { 
-                        if(Character.isAlphabetic(hola[i]))
-                            a+=hola[i];
+                        if(Character.isAlphabetic(lineaVec[i]))
+                            a+=lineaVec[i];
                     }
                     else
                     {   
-//                        if(a!="")
-                        v.agregarPalabra(a.toLowerCase(), f.getName()); 
+                        voc.agregarPalabra(a.toLowerCase(), f.getName()); 
                         a="";
                     }                 
                 }
-                v.agregarPalabra(a.toLowerCase(),f.getName());
+                voc.agregarPalabra(a.toLowerCase(),f.getName());
                 linea = in.readLine();
             } while (linea != null);
             
         } catch (Exception e) {
             System.out.println(e.getMessage());
         }
-        System.out.println(v);
         
     }
-    public void leerLibros(){
-        
-    }
+ 
    public void procesarLibros(ArrayList lista){
-       cola.addAll(lista);
-       while(!cola.isEmpty()){
-           leerDoc(cola.poll().toString());
-       }
-       
+       for (int i = 0; i < lista.size(); i++) {
+           leerDoc(lista.get(i).toString());
+       }  
    }
    public SimpleList<Palabra> encontrarPorPrimerasLetras(String letras)
    {
-       this.materializar();
        SimpleList ret = new SimpleList(); 
-       int longHash = v.getVocabulario().getItems().length;
+       int longHash = voc.getVocabulario().getItems().length;
        for(int i=0;i<longHash;i++){
-           for(int j=0; j<v.getVocabulario().getItems()[i].size(); j++){
-               String pal = v.getVocabulario().getItems()[i].get(j).getPalabra();
+           for(int j=0; j<voc.getVocabulario().getItems()[i].size(); j++){
+               String pal = voc.getVocabulario().getItems()[i].get(j).getPalabra();
                if(pal.startsWith(letras))
                {
-                   ret.addLast(v.getVocabulario().getItems()[i].get(j));
+                   ret.addLast(voc.getVocabulario().getItems()[i].get(j));
                }
            }
        }
@@ -104,60 +97,37 @@ public class Gestor {
    }
     public void actualizarTabla() throws SQLException {
         Acceso acc = new Acceso();
-        String sql = "INSERT INTO PALABRA (PALABRA, FRECUENCIA,CANTIDADDOC) VALUES (?, ?, ?) ";
-        String sql2="UPDATE PALABRA SET FRECUENCIA=?, CANTIDADDOC=? WHERE PALABRA=?";
+        String sql = "INSERT INTO PALABRA (PALABRA, FRECUENCIA,CANTDOCUMENTOS) VALUES (?, ?, ?)";
+        String sql2="UPDATE PALABRA SET FRECUENCIA=?, CANTDOCUMENTOS=? WHERE PALABRA=?";
         Connection con = acc.conectar();
         PreparedStatement ps = con.prepareStatement(sql);
         PreparedStatement ps2 = con.prepareStatement(sql2);
-        for (int i = 0; i < v.getVocabulario().getItems().length; i++) {
-            for (int j = 0; j < v.getVocabulario().getItems()[i].size(); j++) {
-                    if(!this.estaEnBD(v.getVocabulario().getItems()[i].get(j)))
-                    {   ps.setString(1, v.getVocabulario().getItems()[i].get(j).getPalabra());
-                        ps.setString(2, String.valueOf(v.getVocabulario().getItems()[i].get(j).getFrecuencia()));
-                        ps.setString(3, String.valueOf(v.getVocabulario().getItems()[i].get(j).getDocumentos().size()));
-                        ps.addBatch();
-                        System.out.println("jaja");
+        for (int i = 0; i < voc.getVocabulario().getItems().length; i++) {
+            for (int j = 0; j < voc.getVocabulario().getItems()[i].size(); j++) {
+                    if(voc.getVocabulario().getItems()[i].get(j).getInsertada())
+                    {   ps2.setString(1, String.valueOf(voc.getVocabulario().getItems()[i].get(j).getFrecuencia()));
+                        ps2.setString(2, String.valueOf(voc.getVocabulario().getItems()[i].get(j).getDocumentos().size()));
+                        ps2.setString(3, voc.getVocabulario().getItems()[i].get(j).getPalabra());
+                        ps2.addBatch();
                     }
                     else
                     {
-                        System.out.println("jajaja");
-                        ps2.setString(1, String.valueOf(v.getVocabulario().getItems()[i].get(j).getFrecuencia()));
-                        ps2.setString(2, String.valueOf(v.getVocabulario().getItems()[i].get(j).getDocumentos().size()));
-                        ps2.setString(3, v.getVocabulario().getItems()[i].get(j).getPalabra());
-                        ps2.addBatch();                       
+                        ps.setString(1, voc.getVocabulario().getItems()[i].get(j).getPalabra());
+                        ps.setString(2, String.valueOf(voc.getVocabulario().getItems()[i].get(j).getFrecuencia()));
+                        ps.setString(3, String.valueOf(voc.getVocabulario().getItems()[i].get(j).getDocumentos().size()));
+                        ps.addBatch();  
+                        voc.getVocabulario().getItems()[i].get(j).setInsertada(true);                     
                     }
             }
         }
+        
             ps2.executeBatch();
             ps.executeBatch();
             ps.close();
             ps2.close();
             con.close();
     }
-       public boolean estaEnBD(Palabra pal) {
-        Acceso acc = new Acceso();
-        boolean ban=false;
-        try {
-
-            Connection c = acc.conectar();
-            c.setAutoCommit(false);
-            Statement stm = c.createStatement();
-            ResultSet rs;
-            String sql = "SELECT * FROM PALABRA WHERE PALABRA= '" + pal.getPalabra()+"'";
-            rs = stm.executeQuery(sql);
-            rs.next();
-            if(rs.getRow()>0)
-                ban=true;
-            stm.close();
-            c.commit();
-            c.close();
-
-        } catch (SQLException ex) {
-            Logger.getLogger(Vocabulario.class.getName()).log(Level.SEVERE, null, ex);
-        }
-        return ban;
-
-    }
+  
     public void insertar(){
         
     }
@@ -166,7 +136,9 @@ public class Gestor {
     }
     public void materializar ()
     {
-        v.materializar();
+        voc.materializar();
     }
+
+    
     
 }

@@ -3,14 +3,11 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-
 package interfaz;
 
-import Logica.Cola;
-import Logica.Cola;
 import Logica.Gestor;
 import Logica.Palabra;
-import Logica.SimpleList;
+import EstructuraDatos.SimpleList;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -32,20 +29,22 @@ import javax.swing.table.TableRowSorter;
  * @author Gisela
  */
 public class Ventana extends javax.swing.JFrame {
+
     private File editFile;
-    private ArrayList<String>lista;
-    private Gestor gestor;
-   
+    private ArrayList<String> lista, rutas;
+    private static Gestor gestor;
+
     /**
      * Creates new form Ventana
      */
     public Ventana() {
         initComponents();
-        lista=new ArrayList<String>();
-        gestor=new Gestor();
+        lista = new ArrayList<String>();
+        rutas = new ArrayList<String>();
+        gestor = new Gestor();
         gestor.materializar();
+ 
     }
-    
 
     /**
      * This method is called from within the constructor to initialize the form.
@@ -96,10 +95,7 @@ public class Ventana extends javax.swing.JFrame {
 
         tblPalabras.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
-                {null, null, null},
-                {null, null, null},
-                {null, null, null},
-                {null, null, null}
+
             },
             new String [] {
                 "Palabra", "Frecuencia", "Documentos"
@@ -189,7 +185,6 @@ public class Ventana extends javax.swing.JFrame {
                         .addComponent(jLabel3)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 225, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addGroup(layout.createSequentialGroup()
                                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
@@ -207,45 +202,43 @@ public class Ventana extends javax.swing.JFrame {
 
     private void btnProcesarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnProcesarActionPerformed
         // TODO add your handling code here:
-        gestor.procesarLibros(lista);
-        VentanaEspera v= new VentanaEspera(this,true);
        
-//        v.setVisible(true);
+        gestor.procesarLibros(rutas);
+        VentanaEspera v = new VentanaEspera(this, true);
     }//GEN-LAST:event_btnProcesarActionPerformed
 
     private void btnElegirActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnElegirActionPerformed
         // TODO add your handling code here:
-        String archivo="";
+        String archivo = "";
+        String nombre="";
         JFileChooser fc = new JFileChooser();
-        fc.setFileFilter(new javax.swing.filechooser.FileFilter()
-        {
+        fc.setFileFilter(new javax.swing.filechooser.FileFilter() {
             @Override
-            public boolean accept(File f)
-            {
-                return (f.isFile() && f.getName().endsWith(".txt"))||f.isDirectory();
+            public boolean accept(File f) {
+                return (f.isFile() && f.getName().endsWith(".txt")) || f.isDirectory();
             }
 
             @Override
-            public String getDescription()
-            {
+            public String getDescription() {
                 return "Archivos de Texto";
             }
         });
 
-        if (fc.showDialog(this, "Abrir") != JFileChooser.CANCEL_OPTION)
-        {
-            
-            File f= fc.getSelectedFile();
+        if (fc.showDialog(this, "Abrir") != JFileChooser.CANCEL_OPTION) {
+
+            File f = fc.getSelectedFile();
             try {
-                archivo=f.getCanonicalPath();
+                archivo = f.getCanonicalPath();
+                nombre=f.getName();
             } catch (IOException ex) {
                 Logger.getLogger(Ventana.class.getName()).log(Level.SEVERE, null, ex);
             }
-            }
-        if(archivo!=""){
-            lista.add(archivo);
+        }
+        if (archivo != "") {
+            lista.add(nombre);
+            rutas.add(archivo);
             jList1.setListData(lista.toArray());
-           
+
         }
     }//GEN-LAST:event_btnElegirActionPerformed
 
@@ -256,45 +249,44 @@ public class Ventana extends javax.swing.JFrame {
         } catch (SQLException ex) {
             Logger.getLogger(Ventana.class.getName()).log(Level.SEVERE, null, ex);
         }
-        
+
     }//GEN-LAST:event_btnActualizarActionPerformed
 
     private void jTextField2KeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_jTextField2KeyReleased
         // TODO add your handling code here:
         String palabra = this.jTextField2.getText();
-        String matriz[][]= this.resultadoPorEvento(palabra);
-        tblPalabras.setModel(new javax.swing.table.DefaultTableModel(matriz ,
-    new String [] {
-        "Palabra", "Frecuencia", "Documentos"
-    }
-) {
-    boolean[] canEdit = new boolean [] {
-        false, false, false, false
-    };
+        String matriz[][] = this.resultadoPorEvento(palabra);
+        tblPalabras.setModel(new javax.swing.table.DefaultTableModel(matriz,
+                new String[]{
+                    "Palabra", "Frecuencia", "Documentos"
+                }
+        ) {
+            boolean[] canEdit = new boolean[]{
+                false, false, false, false
+            };
 
-    public boolean isCellEditable(int rowIndex, int columnIndex) {
-        return canEdit [columnIndex];
-    }
-});
+            public boolean isCellEditable(int rowIndex, int columnIndex) {
+                return canEdit[columnIndex];
+            }
+        });
 
-jScrollPane2.setViewportView(tblPalabras);
+        jScrollPane2.setViewportView(tblPalabras);
     }//GEN-LAST:event_jTextField2KeyReleased
-    private String[][] resultadoPorEvento(String pal)
-    {
+   
+    private String[][] resultadoPorEvento(String pal) {
         SimpleList<Palabra> list = gestor.encontrarPorPrimerasLetras(pal);
-        int tam= list.size();
-        String matriz[][]= new String [tam][3];
-        for(int i=0;i<tam;i++)
-        {
-            matriz[i][0]=list.getFirst().getPalabra();
-            matriz[i][1]=Integer.toString(list.getFirst().getFrecuencia());
-            matriz[i][2]=Integer.toString(list.getFirst().getDocumentos().size());
+        int tam = list.size();
+        String matriz[][] = new String[tam][3];
+        for (int i = 0; i < tam; i++) {
+            matriz[i][0] = list.getFirst().getPalabra();
+            matriz[i][1] = Integer.toString(list.getFirst().getFrecuencia());
+            matriz[i][2] = Integer.toString(list.getFirst().getDocumentos().size());
             list.removeFirst();
-            
+
         }
         return matriz;
     }
-    
+
     /**
      * @param args the command line arguments
      */
@@ -326,7 +318,9 @@ jScrollPane2.setViewportView(tblPalabras);
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
                 new Ventana().setVisible(true);
+
             }
+                 
         });
     }
 

@@ -1,6 +1,7 @@
 package Logica;
 
 
+import Persistencia.Acceso;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -23,16 +24,24 @@ public class Palabra implements Comparable<Palabra>{
     private String palabra;
     private int frecuencia;
     private ArrayList <String> documentos;
-    private final boolean insertada=false;
+    private  boolean insertada;
     
     public Palabra ()
     {
         
     }
-    public Palabra(String p, int f, ArrayList<String> lista){
+    public void setInsertada(boolean ban){
+        insertada=ban;
+    }
+    public boolean getInsertada(){
+        return insertada;
+    }
+    public Palabra(String p, int f, ArrayList<String> lista) //uso para materializar
+    {
         palabra=p;
         frecuencia=f;
         documentos=lista;
+        insertada=true;
     }
     public Palabra(String p, String doc)
     {
@@ -40,6 +49,7 @@ public class Palabra implements Comparable<Palabra>{
         frecuencia=1;
         documentos= new ArrayList <>();
         documentos.add(doc);
+        insertada=false;
     }
 
     @Override
@@ -84,44 +94,6 @@ public class Palabra implements Comparable<Palabra>{
     public String toString ()
     {
         return "Palabra: "+ palabra+" - Frecuencia: "+frecuencia+" - Documentos: "+documentos.toString();
-    }
-    public void desMaterializar(){
-        Acceso acc=new Acceso();
-        String sql;
-        try {
-            
-            Connection c=acc.conectar();
-            c.setAutoCommit(false);
-            Statement stm=c.createStatement();
-            ResultSet rs;
-            if(documentos.size()>0)
-            {
-                sql="UPDATE VOCABULARIO SET FRECUENCIA :"+frecuencia+" WHERE PALABRA = '"+palabra+"'";
-                  
-            }
-            else
-            {    
-                sql="INSERT INTO VOCABULARIO (palabra,frecuencia,cantidad) VALUES( '"+palabra+"',"+frecuencia+",1)";
-                for (int i = 0; i < documentos.size(); i++) {
-                  sql="\n INSERT INTO DOCUMENTOS (NOMBRE) VALUES ('"+documentos.get(i).toString()+"')";  
-                }
-                
-            }
-            
-                rs=stm.executeQuery(sql);
-            
-                
-            
-            stm.close();
-            c.commit();
-            c.close();
-            
-            
-            
-           
-        } catch (SQLException ex) {
-            Logger.getLogger(Vocabulario.class.getName()).log(Level.SEVERE, null, ex);
-        }
     }
      
     @Override
