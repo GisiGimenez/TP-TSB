@@ -4,7 +4,7 @@
  * and open the template in the editor.
  */
 
-package Logica;
+package Persistencia;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
