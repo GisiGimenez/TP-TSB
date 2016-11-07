@@ -255,24 +255,29 @@ public class Ventana extends javax.swing.JFrame {
     private void jTextField2KeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_jTextField2KeyReleased
         // TODO add your handling code here:
         String palabra = this.jTextField2.getText();
-        String matriz[][] = this.resultadoPorEvento(palabra);
-        tblPalabras.setModel(new javax.swing.table.DefaultTableModel(matriz,
-                new String[]{
-                    "Palabra", "Frecuencia", "Documentos"
-                }
-        ) {
-            boolean[] canEdit = new boolean[]{
-                false, false, false, false
-            };
-
-            public boolean isCellEditable(int rowIndex, int columnIndex) {
-                return canEdit[columnIndex];
-            }
-        });
-
-        jScrollPane2.setViewportView(tblPalabras);
+        this.armarJtable(palabra);
     }//GEN-LAST:event_jTextField2KeyReleased
    
+    private void armarJtable(String pal)
+    {
+        String matriz[][]= this.resultadoPorEvento(pal);
+        tblPalabras.setModel(new javax.swing.table.DefaultTableModel(matriz ,
+    new String [] {
+        "Palabra", "Frecuencia", "Documentos"
+    }
+) {
+    boolean[] canEdit = new boolean [] {
+        false, false, false, false
+    };
+
+    public boolean isCellEditable(int rowIndex, int columnIndex) {
+        return canEdit [columnIndex];
+    }
+});
+
+jScrollPane2.setViewportView(tblPalabras);
+    }
+    
     private String[][] resultadoPorEvento(String pal) {
         SimpleList<Palabra> list = gestor.encontrarPorPrimerasLetras(pal);
         int tam = list.size();
