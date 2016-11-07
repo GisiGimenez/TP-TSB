@@ -189,7 +189,6 @@ public class Ventana extends javax.swing.JFrame {
                         .addComponent(jLabel3)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 225, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addGroup(layout.createSequentialGroup()
                                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
@@ -197,7 +196,7 @@ public class Ventana extends javax.swing.JFrame {
                                     .addComponent(btnActualizar))
                                 .addGap(0, 0, Short.MAX_VALUE))
                             .addGroup(layout.createSequentialGroup()
-                                .addGap(1, 1, 1)
+                                .addGap(2, 2, 2)
                                 .addComponent(jTextField2)))))
                 .addContainerGap())
         );
@@ -262,7 +261,12 @@ public class Ventana extends javax.swing.JFrame {
     private void jTextField2KeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_jTextField2KeyReleased
         // TODO add your handling code here:
         String palabra = this.jTextField2.getText();
-        String matriz[][]= this.resultadoPorEvento(palabra);
+        this.armarJtable(palabra);
+    }//GEN-LAST:event_jTextField2KeyReleased
+    
+    private void armarJtable(String pal)
+    {
+        String matriz[][]= this.resultadoPorEvento(pal);
         tblPalabras.setModel(new javax.swing.table.DefaultTableModel(matriz ,
     new String [] {
         "Palabra", "Frecuencia", "Documentos"
@@ -278,7 +282,8 @@ public class Ventana extends javax.swing.JFrame {
 });
 
 jScrollPane2.setViewportView(tblPalabras);
-    }//GEN-LAST:event_jTextField2KeyReleased
+    }
+    
     private String[][] resultadoPorEvento(String pal)
     {
         SimpleList<Palabra> list = gestor.encontrarPorPrimerasLetras(pal);

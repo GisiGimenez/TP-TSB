@@ -88,7 +88,6 @@ public class Gestor {
    }
    public SimpleList<Palabra> encontrarPorPrimerasLetras(String letras)
    {
-       this.materializar();
        SimpleList ret = new SimpleList(); 
        int longHash = v.getVocabulario().getItems().length;
        for(int i=0;i<longHash;i++){
